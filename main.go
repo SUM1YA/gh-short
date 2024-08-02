@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -236,6 +237,16 @@ func healthHandler(c *gin.Context) {
 
 func main() {
 
+	portStr := os.Getenv("PORT")
+	port := 8080
+	if portStr != "" {
+		if p, err := strconv.Atoi(portStr); err == nil {
+			port = p
+		} else {
+			fmt.Println("Invalid PORT value, using default port 8080")
+		}
+	}
+
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
@@ -255,8 +266,9 @@ func main() {
 
 	go performHealthCheck()
 
+	addr := fmt.Sprintf(":%d", port)
 	go func() {
-		if err := r.Run(":8080"); err != nil {
+		if err := r.Run(addr); err != nil {
 			log.Fatal(err)
 		}
 	}()
