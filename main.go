@@ -230,12 +230,17 @@ func performHealthCheck() {
 	}
 }
 
+func healthHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, nil)
+}
+
 func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	r.Use(LoggerMiddleware())
+	r.GET("/health", healthHandler)
 	// Define the /new endpoint
 	r.POST("/new", newHandler)
 
